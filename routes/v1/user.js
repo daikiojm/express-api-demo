@@ -55,4 +55,13 @@ router.put('/:id', (req, res) => {
     })
 })
 
+// delete user by id
+router.delete('/:id', function(req, res, next) {
+  let Userid = req.params.id;
+  UserModel.remove({_id:Userid})
+    .then(() => {
+      res.json({message: 'Success!!'});
+    });
+});
+
 module.exports = router;

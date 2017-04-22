@@ -24,4 +24,20 @@ router.get('/', function(req, res, next) {
   })
 });
 
+router.get('/:id', function(req, res, next) {
+  let Articleid = req.params.id;
+  ArticleModel
+    .findById(Articleid, (err, article) => {
+      res.json(article);
+    });
+});
+
+router.delete('/:id', function(req, res, next) {
+  let Articleid = req.params.id;
+  ArticleModel.remove({_id:Articleid})
+    .then(() => {
+      res.json({message: 'Success!!'});
+    });
+});
+
 module.exports = router;
