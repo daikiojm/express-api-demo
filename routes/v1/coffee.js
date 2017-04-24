@@ -51,8 +51,7 @@ router.get('/count', function(req, res, next) {
   // ref : https://www.quora.com/Node-js-How-do-range-query-in-mongoose
   // 境界値を含む場合: $gte, $lte
   // 境界値を含まない場合: $gt, $lt
-  DripModel.count({user_id: userId, type: dripType, "date": {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}}, (err, c) => {
-    console.log(c);
+  DripModel.count({user_id: userId, type: dripType, date: {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}}, (err, c) => {
     TypeModel.findOne({id: dripType}, (err, docs) => {
       if (err) {
         res.json({
@@ -60,7 +59,6 @@ router.get('/count', function(req, res, next) {
           "message" : err
         });
       }
-      console.log(docs);
       let price = docs.price || 0;
       res.json({
         "result": "success",
