@@ -43,10 +43,11 @@ router.get('/:id/:type', function(req, res, next) {
 });
 
 // drip?userid=d_ojima&type=0&since=2017-04-22&until=2017-04-24
-router.get('/', function(req, res, next) {
+router.get('/count', function(req, res, next) {
   let userId = req.query.userid || null;
   if (userId == null) {
     res.json({
+      "result": "err",
       "message": "Request parameter is insufficient"
     });
   }
@@ -60,14 +61,48 @@ router.get('/', function(req, res, next) {
   DripModel.count({user_id: userId, type: dripType, "date": {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}}, (err, c) => {
     console.log(c);
     TypeModel.findOne({id: dripType}, (err, docs) => {
+      if (err) {
+        res.json({
+          "result": "err",
+          "message" : err
+        });
+      }
       console.log(docs);
       let price = docs.price || 0;
       res.json({
+        "result": "success",
         "count": c,
         "price": c * price
       });
     });
   });
+});
+
+
+router.get('/', function(req, res, next) {
+  let userId = req.query.userid || null;
+  if (userId == null) {
+    res.json({
+      "result": "err",
+      "message": "Request parameter is insufficient"
+    });
+  }
+  let dripType = req.query.type || 0;// default: 0(barista)
+  let sinceDay = req.query.since || moment.unix(0).format("YYYY-MM-DD");
+  let untilDay = req.query.until || moment().format("YYYY-MM-DD");
+
+  let query = {
+    user_id: userId,
+    date: {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}
+  }
+  if (false) {
+    query.type = dripType;
+  }
+
+  DripModel.find(query, (err, docs) => {
+    res.json(docs);
+  })
+
 });
 
 /* GET users listing. */
