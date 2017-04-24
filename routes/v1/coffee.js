@@ -5,13 +5,6 @@ let DripModel = require('../../models/dripModel.js');
 let TypeModel = require('../../models/typeModel.js');
 
 
-// drip
-
-// drip count by user
-// in: user_id, type
-
-// delete drip document
-
 router.post('/', (req, res) => {
   let Drip = new DripModel();
   Drip.user_id = req.body.user_id;
@@ -86,23 +79,22 @@ router.get('/', function(req, res, next) {
       "result": "err",
       "message": "Request parameter is insufficient"
     });
-  }
-  let dripType = req.query.type || 0;// default: 0(barista)
-  let sinceDay = req.query.since || moment.unix(0).format("YYYY-MM-DD");
-  let untilDay = req.query.until || moment().format("YYYY-MM-DD");
+  } else {
+    let dripType = req.query.type || null;// default: 0(barista)
+    let sinceDay = req.query.since || moment.unix(0).format("YYYY-MM-DD");
+    let untilDay = req.query.until || moment().format("YYYY-MM-DD");
 
-  let query = {
-    user_id: userId,
-    date: {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}
+    let query = {
+      user_id: userId,
+      date: {'$gte': new Date(sinceDay), '$lte': new Date(untilDay)}
+    }
+    if (dripType != null) {
+      query.type = dripType;
+    }
+    DripModel.find(query, (err, docs) => {
+      res.json(docs);
+    });
   }
-  if (false) {
-    query.type = dripType;
-  }
-
-  DripModel.find(query, (err, docs) => {
-    res.json(docs);
-  })
-
 });
 
 /* GET users listing. */
